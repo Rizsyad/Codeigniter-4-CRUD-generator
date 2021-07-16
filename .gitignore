@@ -1,3 +1,4 @@
 ref.txt
 .DS_Store
 vendor/
+composer.lock
