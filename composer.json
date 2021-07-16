@@ -1,0 +1,13 @@
+{
+    "description": "CRUD Generator For Codeigniter 4",
+    "authors": [
+        {
+            "name": "Rizsyad AR",
+            "email": "rizsyad@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/filesystem": "^5.3",
+        "vlucas/phpdotenv": "^5.3"
+    }
+}

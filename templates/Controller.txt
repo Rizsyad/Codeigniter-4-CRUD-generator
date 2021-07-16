@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\{{NAMEFILEMODEL}};
+
+class {{NAMEFILE}} extends BaseController
+{
+    protected ${{NAMEFILEMODEL}};
+    protected $validation;
+
+    public function __construct()
+    {
+        $this->{{NAMEFILEMODEL}} = new {{NAMEFILEMODEL}}();
+        $this->validation =  \Config\Services::validation();
+    }
+
+    public function index()
+    {
+        $data = [
+            "controller" => "{{NAMEFILE}}",
+            "title" => "{{TITLE}}"
+        ];
+
+        return view('{{NAMEFILEVIEW}}', $data);
+    }
+
+    public function getAll()
+    {
+        $result = $this->{{NAMEFILEMODEL}}->select('{{SELECTFIELDS}}')->findAll();
+        return $this->response->setJSON($result);
+    }
+
+    public function getOne()
+    {
+        $id = $this->request->getPost('{{PRIMARYKEY}}');
+
+        if ($this->validation->check($id, 'required|numeric')) {
+            $data = $this->{{NAMEFILEMODEL}}->where('{{PRIMARYKEY}}', $id)->first();
+            return $this->response->setJSON($data);
+        }
+
+        throw new \CodeIgniter\Exceptions\PageNotFoundException();
+    }
+
+    public function store()
+    {
+        $response = array();
+
+        $fields = [{{FIELDSSTORE}}];
+
+        $rules = [{{RULESSTORE}}];
+
+        $this->validation->setRules($rules);
+
+        if ($this->validation->run($fields) == FALSE) {
+            $response['success'] = false;
+            $response['messages'] = $this->validation->getErrors();
+        } else {
+            if ($this->{{NAMEFILEMODEL}}->insert($fields)) {
+                $response['success'] = true;
+                $response['messages'] = 'Data has been inserted successfully';
+            } else {
+                $response['success'] = false;
+                $response['messages'] = 'Insertion error!';
+            }
+        }
+        return $this->response->setJSON($response);
+    }
+
+    public function update()
+    {
+        $response = array();
+
+        $fields = [{{FIELDSUPDATE}}];
+
+        $rules = [{{RULESUPDATE}}];
+
+        $this->validation->setRules($rules);
+
+        if ($this->validation->run($fields) == FALSE) {
+            $response['success'] = false;
+            $response['messages'] = $this->validation->getErrors();
+        } else {
+            if ($this->{{NAMEFILEMODEL}}->update($fields['{{PRIMARYKEY}}'], $fields)) {
+                $response['success'] = true;
+                $response['messages'] = 'Successfully updated';
+            } else {
+                $response['success'] = false;
+                $response['messages'] = 'Update error!';
+            }
+        }
+        return $this->response->setJSON($response);
+    }
+
+    public function delete()
+    {
+        $response = array();
+        $id = $this->request->getPost('{{PRIMARYKEY}}');
+
+        if (!$this->validation->check($id, 'required|numeric')) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException();
+        } else {
+            if ($this->{{NAMEFILEMODEL}}->where('{{PRIMARYKEY}}', $id)->delete()) {
+                $response['success'] = true;
+                $response['messages'] = 'Deletion succeeded';
+            } else {
+                $response['success'] = false;
+                $response['messages'] = 'Deletion error!';
+            }
+        }
+
+        return $this->response->setJSON($response);
+    }
+}
