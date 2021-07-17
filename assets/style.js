@@ -60,6 +60,11 @@ function setPath() {
                 'path': path
             },
             success: async function (data) {
+                if(data.success === false) {
+                    Swal.fire("Error",data.message,"error");
+                    return;
+                }
+                
                 var {
                     host,
                     username,

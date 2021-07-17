@@ -95,8 +95,6 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/style.js"></script>
     <script>
-        // var table = "";
-
         $(document).ready(() => {
             checkLocalStorage();
             setPath();

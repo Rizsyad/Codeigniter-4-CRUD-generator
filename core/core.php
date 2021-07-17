@@ -30,15 +30,25 @@ if (isset($_POST["action"])) {
 
     if ($action == 'getConnection') {
         $file->setPath($_POST["path"]);
-        $dotenv = Dotenv\Dotenv::createImmutable($file->getPath());
-        $dotenv->load();
 
-        $data = [
-            "host"      => $_SERVER["database.default.hostname"],
-            "username"  => $_SERVER["database.default.username"],
-            "password"  => $_SERVER["database.default.password"],
-            "database"  => $_SERVER["database.default.database"]
-        ];
+        if (!is_dir($file->getPath()) || !file_exists($file->getPath() . "/.env")) {
+            $data = [
+                "success" => false,
+                "message" => "directory or file .env in '" . $file->getPath() . "' not found"
+            ];
+        } else {
+            $dotenv = Dotenv\Dotenv::createImmutable($file->getPath());
+            $dotenv->load();
+
+            $data = [
+                "host"      => $_SERVER["database.default.hostname"],
+                "username"  => $_SERVER["database.default.username"],
+                "password"  => $_SERVER["database.default.password"],
+                "database"  => $_SERVER["database.default.database"]
+            ];
+        }
+
+
         echo json_encode($data);
     }
 
@@ -66,6 +76,12 @@ if (isset($_POST["action"])) {
             "app/Views"
         ];
         $data = [];
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            @exec("find " . $file->getPath() . "/app/Controllers -type d -exec chmod 0777 {} +");
+            @exec("find " . $file->getPath() . "/app/Models -type d -exec chmod 0777 {} +");
+            @exec("find " . $file->getPath() . "/app/Views -type d -exec chmod 0777 {} +");
+        }
 
         foreach ($folder_array as $folder) {
             if ($file->isPermissionWritable($folder)) {
