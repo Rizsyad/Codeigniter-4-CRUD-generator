@@ -48,7 +48,6 @@ if (isset($_POST["action"])) {
             ];
         }
 
-
         echo json_encode($data);
     }
 
@@ -155,20 +154,20 @@ if (isset($_POST["action"])) {
         $controller = $builder->Controller($data_controller);
         $view       = $builder->View($data_view);
 
+        $data = [];
+
         if (
             $file->createFile("$path/app/Controllers/$namefileController.php", $controller) &&
             $file->createFile("$path/app/Models/$namefileModel.php", $model) &&
             $file->createFile("$path/app/Views/$namefileView.php", $view)
         ) {
-            echo json_encode([
-                "success" => true,
-                "message" => "Success build it"
-            ]);
+            $data["success"] = true;
+            $data["message"] = "Success build it";
         } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Failed build it"
-            ]);
+            $data["success"] = false;
+            $data["message"] = "Failed build it";
         }
+
+        echo json_encode($data);
     }
 }
