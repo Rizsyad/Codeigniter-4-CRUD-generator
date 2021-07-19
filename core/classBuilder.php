@@ -61,12 +61,19 @@ class Builder
     public function View($dataView)
     {
         $templates = file_get_contents("../templates/View.txt");
+        $array_buttons = [
+            'copy',
+            'csv',
+            'pdf',
+            'excel',
+            'print',
+        ];
 
-        $table_html = "";
         $form_add = "";
         $form_update = "";
         $dataTables = "";
         $columndefs = '{
+            title: "Action",
             targets: ' . sizeof(explode(",", str_replace($dataView["primarykey"] . ",", "", $dataView["select"]))) . ',
             render: function(data, type, row, meta) {
                 return \'\
@@ -75,17 +82,20 @@ class Builder
             }
         }';
         $editjavascript = "";
+        $datatablesbutton = "";
+
 
         foreach (explode(",", str_replace($dataView["primarykey"] . ",", "", $dataView["select"])) as $value) {
             $namelabel =  ucwords(preg_replace('/[^A-Za-z0-9\-]/', ' ', strtolower($value)));
-            $table_html .= "<th>$namelabel</th>";
             $form_add .= '
             <div class="form-group">
                 <label for="' . $value . '">' . $namelabel . '</label>
                 <input type="text" name="' . $value . '" id="' . $value . '_add" class="form-control" required />
             </div>';
             $dataTables .= '{
-                "data": "' . $value . '"
+                title: "' . $namelabel . '",
+                data: "' . $value . '",
+                className: "export"
             },';
             $editjavascript .= '$("#' . $value . '").val(data.' . $value . ');';
         }
@@ -101,7 +111,20 @@ class Builder
             </div>';
         }
 
-        $templates = str_replace("{{TABLEHTML}}", $table_html, $templates);
+        foreach ($array_buttons as $button) {
+            $datatablesbutton .= "
+            {
+                text: '<i class=\"fas fa-" . (($button == "pdf" || $button == "csv" || $button == "excel") ? "file-$button" : $button) . "\"></i> " . (($button == "pdf" || $button == "csv" || $button == "excel") ? ucwords("download $button") : ucfirst($button)) . "',
+                extend: '$button',
+                title: 'Export <?= ucwords(\$title); ?>',
+                className: 'btn btn-outline-primary my-2',
+                exportOptions: {
+                    columns: '.export'
+                }
+            },";
+        }
+
+        $templates = str_replace("{{DATATABLESBUTTON}}", $datatablesbutton, $templates);
         $templates = str_replace("{{HTMLADD}}", $form_add, $templates);
         $templates = str_replace("{{HTMLUPDATE}}", $form_update, $templates);
         $templates = str_replace("{{DATATABLES}}", $dataTables, $templates);
@@ -109,6 +132,32 @@ class Builder
         $templates = str_replace("{{ARRAYSELECT}}", json_encode(explode(",", str_replace($dataView["primarykey"] . ",", "", $dataView["select"]))), $templates);
         $templates = str_replace("{{PRIMARYKEY}}", $dataView["primarykey"], $templates);
         $templates = str_replace("{{EDITJAVASCRIPT}}", $editjavascript, $templates);
+
+
+
+        // {
+        //     extend: 'copy',
+        //     className: 'btn btn-outline-primary my-2'
+        // },
+        // {
+        //     extend: 'csv',
+        //     className: 'btn btn-outline-primary my-2'
+        // },
+        // {
+        //     extend: 'pdf',
+        //     title: 'Export Data Users',
+        //     className: 'btn btn-outline-primary my-2'
+        // },
+        // {
+        //     extend: 'excel',
+        //     title: 'Export Data Users',
+        //     className: 'btn btn-outline-primary my-2'
+        // },
+        // {
+        //     extend: 'print',
+        //     title: 'Export Data Users',
+        //     className: 'btn btn-outline-primary my-2'
+        // },
 
         return $templates;
     }

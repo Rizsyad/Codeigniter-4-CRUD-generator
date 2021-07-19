@@ -20,10 +20,6 @@
         <div class="table-responsive">
             <table class="table table-hover table-bordered table-striped mt-2">
                 <thead>
-                    <tr>
-                        {{TABLEHTML}}
-                        <th>Action</th>
-                    </tr>
                 </thead>
                 <tbody>
                 </tbody>
@@ -104,30 +100,7 @@
                 ServerSide: true,
                 retrieve: true,
                 dom: 'Blfrtip',
-                buttons: [{
-                        extend: 'copy',
-                        className: 'btn btn-outline-primary my-2'
-                    },
-                    {
-                        extend: 'csv',
-                        className: 'btn btn-outline-primary my-2'
-                    },
-                    {
-                        extend: 'pdf',
-                        title: 'Export Data Users',
-                        className: 'btn btn-outline-primary my-2'
-                    },
-                    {
-                        extend: 'excel',
-                        title: 'Export Data Users',
-                        className: 'btn btn-outline-primary my-2'
-                    },
-                    {
-                        extend: 'print',
-                        title: 'Export Data Users',
-                        className: 'btn btn-outline-primary my-2'
-                    },
-                ],
+                buttons: [{{DATATABLESBUTTON}}],
                 ajax: {
                     url: '<?= base_url("$controller/getAll") ?>',
                     type: 'POST',
